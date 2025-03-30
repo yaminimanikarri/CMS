@@ -1,0 +1,180 @@
+openapi: 3.0.0
+info:
+  title: Charger Management API
+  description: API for managing EV chargers and transactions
+  version: 1.0.0
+
+paths:
+  /api/charger:
+    get:
+      summary: Get all chargers
+      operationId: getAllChargers
+      responses:
+        '200':
+          description: List of chargers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Charger'
+    post:
+      summary: Add a new charger
+      operationId: addCharger
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Charger'
+      responses:
+        '201':
+          description: Charger added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Charger'
+
+  /api/transactions:
+    get:
+      summary: Get all transactions
+      operationId: getAllTransactions
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+
+  /api/transactions/{chargerId}:
+    get:
+      summary: Get transactions by charger ID
+      operationId: getTransactionsByCharger
+      parameters:
+        - name: chargerId
+          in: path
+          required: true
+          description: Charger ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+  /api/transactions/start:
+    post:
+      summary: Start a transaction
+      operationId: startTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '201':
+          description: Transaction started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+
+  /api/transactions/end/{id}:
+    put:
+      summary: End a transaction
+      operationId: endTransaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                energyConsumed:
+                  type: number
+      responses:
+        '200':
+          description: Transaction ended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+
+  /api/transactions/history:
+    get:
+      summary: Get transaction history
+      operationId: getTransactionHistory
+      parameters:
+        - name: chargerId
+          in: query
+          required: true
+          description: Charger ID
+          schema:
+            type: string
+        - name: start
+          in: query
+          required: true
+          description: Start time
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          required: true
+          description: End time
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Transaction history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+components:
+  schemas:
+    Charger:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        chargerId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        energyConsumed:
+          type: number

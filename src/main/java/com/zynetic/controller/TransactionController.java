@@ -25,10 +25,7 @@ public class TransactionController {
         return transactionService.findByChargerId(chargerId);
     }
 
-    @PostMapping
-    public Mono<Transaction> addTransaction(@RequestBody Transaction transaction) {
-        return transactionService.save(transaction);
-    }
+
 
     @PostMapping("/start")
     public Mono<Transaction> startTransaction(@RequestBody Transaction transaction) {
